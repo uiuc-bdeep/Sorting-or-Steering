@@ -35,9 +35,9 @@ testers.path <- "tester_assignment.csv"
 
 testers <- read.csv(testers.path)
 
-# Output
+# Output Working Directory
 
-out <- "C:/Users/genin/OneDrive/Documents/Git/Discrimination/output/"
+out <- "~/"
 
 
 # Descriptive statistics by race ---------------------------------------------------------------
