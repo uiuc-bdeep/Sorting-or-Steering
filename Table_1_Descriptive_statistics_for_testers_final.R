@@ -8,9 +8,9 @@
 
 rm(list = ls())
 
-# Set working directory
+# Set working directory of the input files
 
-setwd("C:/Users/genin/OneDrive/Documents/Git/Discrimination/data")
+setwd("~/")
 
 # Define function for loading packages
 
