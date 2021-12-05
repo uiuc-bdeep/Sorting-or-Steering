@@ -11,7 +11,7 @@ rm(list = ls())
 
 # Set working directory
 
-setwd("C:/Users/genin/OneDrive/Documents/Git/Discrimination/data")
+setwd("~/")
 
 # Define function for loading packages
 
@@ -42,7 +42,7 @@ scores = readRDS(test.path)
 
 # Output
 
-out <- "C:/Users/genin/OneDrive/Documents/Git/Discrimination/output/"
+out <- "~/"
 
 
 
