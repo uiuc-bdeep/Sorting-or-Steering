@@ -348,7 +348,7 @@ stargazer(PRadrace, SKadrace, COLadrace, SF4, own4,
 
 ### Impled Preferences for Neighborhood Attributes
 
-stargazer(ED_elem, ED_middle4, ASadrace, ESadrace,
+stargazer(ED_elem_, ED_middle4_, ASadrace_, ESadrace_,
           type = "latex",
           out = paste0(out, "REC_Cen_panel_A_.tex"),
           dep.var.labels.include = F,
@@ -366,7 +366,7 @@ stargazer(ED_elem, ED_middle4, ASadrace, ESadrace,
     
 
 
-stargazer(PRadrace, SKadrace, COLadrace, SF4, own4,
+stargazer(PRadrace_, SKadrace_, COLadrace_, SF4_, own4_,
           type = "latex",
           out = paste0(out, "REC_Cen_panel_B_.tex"),
           dep.var.labels.include = F,
