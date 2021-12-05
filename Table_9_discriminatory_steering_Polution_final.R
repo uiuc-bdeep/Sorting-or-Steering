@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------------------------- #
-#   Generate Table 8. Discriminatory Steering and Neighborhood Effects                           #
+#   Generate Table 9. Discriminatory Steering and Local Pollution Exposures                      #
 #                                                                                                # 
 #   R-Version: 4.04                                                                              #                                                             #
 #   Date Last Modification: 12/01/2021                                                           #
@@ -9,7 +9,7 @@
 rm(list = ls()) 
 
 # Set working directory
-setwd("C:/Users/genin/OneDrive/Documents/Git/Discrimination/data")
+setwd("~/")
 
 # Define function for loading packages
 pkgTest <- function(x) {
@@ -25,7 +25,7 @@ packages <- c("readxl", "readstata13", "lfe", "Synth","data.table", "plm", "ggpl
 lapply(packages, pkgTest)
 
 # Output
-out <- "C:/Users/genin/OneDrive/Documents/Git/Discrimination/output/"
+out <- "~/"
 
 
 ## Housing Search  ######################################################################################################
