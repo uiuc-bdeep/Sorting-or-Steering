@@ -11,7 +11,7 @@ rm(list = ls())
 
 # Set working directory
 
-setwd("C:/Users/genin/OneDrive/Documents/Git/Discrimination/data")
+setwd("~/")
 
 # Define function for loading packages
 
@@ -38,7 +38,7 @@ testers <- read.csv(testers.path, header = TRUE)
 
 # Output
 
-out <- "views/tables/balance tables/"
+out <- "~/"
 
 # Balance statistics advertised homes by race --------------------------------------------------
 
