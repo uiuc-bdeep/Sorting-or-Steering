@@ -8,7 +8,7 @@
 
 rm(list = ls())
 
-# Set working directory of the input files
+# Set working directory
 
 setwd("~/")
 
@@ -35,7 +35,7 @@ testers.path <- "tester_assignment.csv"
 
 testers <- read.csv(testers.path)
 
-# Output Working Directory
+# Output
 
 out <- "~/"
 

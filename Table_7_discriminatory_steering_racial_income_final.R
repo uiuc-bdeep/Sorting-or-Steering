@@ -9,7 +9,8 @@
 rm(list = ls()) 
 
 # Set working directory
-setwd("C:/Users/genin/OneDrive/Documents/Git/Discrimination/data")
+
+setwd("~/")
 
 # Define function for loading packages
 
@@ -25,8 +26,9 @@ pkgTest <- function(x) {
 packages <- c("readxl", "readstata13", "lfe", "Synth","data.table", "plm", "ggplot2", "MatchIt", "experiment", "stargazer")
 lapply(packages, pkgTest)
 
-# Output
-out <- "C:/Users/genin/OneDrive/Documents/Git/Discrimination/output/"
+# Output directory
+
+out <- "~/"
 
 
 ## Housing Search  ######################################################################################################

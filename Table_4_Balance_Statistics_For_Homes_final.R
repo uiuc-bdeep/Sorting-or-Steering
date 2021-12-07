@@ -40,7 +40,7 @@ testers <- readRDS(testers.path)
 homes <- readRDS(homes.path)
 scores = readRDS(test.path)
 
-# Output
+# Output directory
 
 out <- "~/"
 

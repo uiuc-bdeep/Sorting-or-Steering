@@ -40,7 +40,7 @@ scores = readRDS(test.path)
 
 # Output
 
-out <- "~/"
+out <- "~\"
 
 
 
@@ -200,7 +200,7 @@ rownames(homes.summary_all)[which(rownames(homes.summary_all) == "singlefamily_A
 rownames(homes.summary_all)[which(rownames(homes.summary_all) == "ownerocc_Ad")] <- "Ownership Rate"
 
 rownames(scores.summary)[which(rownames(scores.summary) == "mn_avg_ol_elem_Ad")] <- "Elem. School Test Score"
-rownames(scores.summary)[which(rownames(scores.summary) == "mn_avg_ol_middle_Ad")] <- "Midd. School Test Score"
+rownames(scores.summary)[which(rownames(scores.summaryl) == "mn_avg_ol_middle_Ad")] <- "Midd. School Test Score"
 
 # ----------------------------------------------------------------------------------------------
 # For APRACE variable: 

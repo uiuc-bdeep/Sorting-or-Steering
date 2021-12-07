@@ -36,7 +36,7 @@ testers.path <- "tester_assignment.csv"
 
 testers <- read.csv(testers.path, header = TRUE)
 
-# Output
+# Output directory
 
 out <- "~/"
 

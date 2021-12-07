@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------------------------- #
-#   Generate Table 9. Discriminatory Steering and Local Pollution Exposures                      #
+#   Generate Table 9. Discriminatory Steering Polution                                           #
 #                                                                                                # 
 #   R-Version: 4.04                                                                              #                                                             #
 #   Date Last Modification: 12/01/2021                                                           #
@@ -24,7 +24,8 @@ pkgTest <- function(x) {
 packages <- c("readxl", "readstata13", "lfe", "Synth","data.table", "plm", "ggplot2", "MatchIt", "experiment", "stargazer")
 lapply(packages, pkgTest)
 
-# Output
+
+# Output directory
 out <- "~/"
 
 
