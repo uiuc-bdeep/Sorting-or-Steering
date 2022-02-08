@@ -114,6 +114,34 @@ recs_trial_final$prob70[recs_trial_final$buyer_pred_race_Rec=="asian" & recs_tri
 recs_trial_final$prob70[recs_trial_final$buyer_pred_race_Rec=="other" & recs_trial_final$buyer_oth_Rec > .7] <- 1
 recs_trial_final$prob70[is.na(recs_trial_final$buyer_pred_race_Rec)] <- NA
 
+##### Difference of Score ###############
+
+recs_trial_final$w_dif = recs_trial_final$buyer_whi_Rec - pmax(recs_trial_final$buyer_bla_Rec,recs_trial_final$buyer_his_Rec,recs_trial_final$buyer_asi_Rec)
+recs_trial_final$b_dif = recs_trial_final$buyer_bla_Rec - pmax(recs_trial_final$buyer_whi_Rec,recs_trial_final$buyer_his_Rec,recs_trial_final$buyer_asi_Rec)
+recs_trial_final$h_dif = recs_trial_final$buyer_his_Rec - pmax(recs_trial_final$buyer_bla_Rec,recs_trial_final$buyer_whi_Rec,recs_trial_final$buyer_asi_Rec)
+recs_trial_final$a_dif = recs_trial_final$buyer_asi_Rec - pmax(recs_trial_final$buyer_bla_Rec,recs_trial_final$buyer_his_Rec,recs_trial_final$buyer_whi_Rec)
+
+recs_trial_final$dif_score =NA
+recs_trial_final$dif_score= ifelse(recs_trial_final$buyer_pred_race_Rec=="white",recs_trial_final$w_dif,recs_trial_final$dif_score)
+recs_trial_final$dif_score= ifelse(recs_trial_final$buyer_pred_race_Rec=="black",recs_trial_final$b_dif,recs_trial_final$dif_score)
+recs_trial_final$dif_score= ifelse(recs_trial_final$buyer_pred_race_Rec=="hispanic",recs_trial_final$h_dif,recs_trial_final$dif_score)
+recs_trial_final$dif_score= ifelse(recs_trial_final$buyer_pred_race_Rec=="asian",recs_trial_final$a_dif,recs_trial_final$dif_score)
+
+dif_score = recs_trial_final %>%
+  group_by(buyer_pred_race_Rec) %>%
+  summarise(dif_score = mean(dif_score, na.rm=TRUE)) %>%
+  filter(!(is.na(dif_score)))
+
+dif_score= t(dif_score[c(4,2,3,1),])
+
+# Same Race Tester 
+
+same1 <- felm(buyer_white_Rec ~ whitetester + w2012pc_Ad + b2012pc_Ad + a2012pc_Ad + hisp2012pc_Ad + logAdPrice  | CONTROL + SEQUENCE.x.x + month.x + HCITY.x + ARELATE2.x + SAPPTAM.x + TSEX.x.x + THHEGAI.x + TPEGAI.x + THIGHEDU.x + TCURTENR.x +  ALGNCUR.x + AELNG1.x + DPMTEXP.x + AMOVERS.x + age.x + ALEASETP.x + ACAROWN.x | 0 | CONTROL, data = recs_trial_final)
+same2 <- felm(buyer_black_Rec ~ blacktester + w2012pc_Ad + b2012pc_Ad + a2012pc_Ad + hisp2012pc_Ad + logAdPrice | CONTROL + SEQUENCE.x.x + month.x + HCITY.x + ARELATE2.x + SAPPTAM.x + TSEX.x.x + THHEGAI.x + TPEGAI.x + THIGHEDU.x + TCURTENR.x +  ALGNCUR.x + AELNG1.x + DPMTEXP.x + AMOVERS.x + age.x + ALEASETP.x + ACAROWN.x | 0 | CONTROL, data = recs_trial_final)
+same3 <- felm(buyer_hisp_Rec ~ hisptester + w2012pc_Ad + b2012pc_Ad + a2012pc_Ad + hisp2012pc_Ad + logAdPrice | CONTROL + SEQUENCE.x.x + month.x + HCITY.x + ARELATE2.x + SAPPTAM.x + TSEX.x.x + THHEGAI.x + TPEGAI.x + THIGHEDU.x + TCURTENR.x +  ALGNCUR.x + AELNG1.x + DPMTEXP.x + AMOVERS.x + age.x + ALEASETP.x + ACAROWN.x | 0 | CONTROL, data = recs_trial_final)
+same4 <- felm(buyer_asian_Rec ~ asiantester + w2012pc_Ad + b2012pc_Ad + a2012pc_Ad + hisp2012pc_Ad + logAdPrice | CONTROL + SEQUENCE.x.x + month.x + HCITY.x + ARELATE2.x + SAPPTAM.x + TSEX.x.x + THHEGAI.x + TPEGAI.x + THIGHEDU.x + TCURTENR.x +  ALGNCUR.x + AELNG1.x + DPMTEXP.x + AMOVERS.x + age.x + ALEASETP.x + ACAROWN.x | 0 | CONTROL, data = recs_trial_final)
+
+
 # Sales Price
 ## Sales Price is based on buyer names from ZTRAX transaction data
 
@@ -161,6 +189,27 @@ mean1=as.vector(c(mean(a[a$white.x==1,"w2012pc_Rec"]),
                   mean(a[a$white.x==1,"w2012pc_Rec"]))) 
 
 ### GENERATE TABLES
+
+##Panel A
+
+stargazer(dif_score,
+          type = "latex",
+          out = paste0(out, "HUM_tabdifscore_JPE.tex"),
+          title="Discriminatory Steering and Later Transactions",
+          model.numbers = F,
+          digits=4,digits.extra=0,no.space=T,align=T,model.names=F,notes.append=T,object.names=F)
+
+stargazer(same1, same2, same3, same4,
+          type = "latex",
+          out = paste0(out, "HUM_samerace_JPE.tex"),
+          title="Discriminatory Steering and Later Transactions",
+          model.numbers = F,
+          keep = c("whitetester","blacktester","hisptester","asiantester"),
+          covariate.labels = c("Same Race Tester"),
+          keep.stat=c("n","adj.rsq"),
+          digits=4,digits.extra=0,no.space=T,align=T,model.names=F,notes.append=T,object.names=F)
+
+## Panel B
 
 
 stargazer(logPrice11, logPrice12, logPrice13, logPrice14, logPrice15,
