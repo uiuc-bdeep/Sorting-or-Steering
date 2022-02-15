@@ -192,21 +192,21 @@ mean1=as.vector(c(mean(a[a$white.x==1,"w2012pc_Rec"]),
 
 ##Panel A
 
-stargazer(dif_score,
-          type = "latex",
-          out = paste0(out, "HUM_tabdifscore_JPE.tex"),
-          title="Discriminatory Steering and Later Transactions",
-          model.numbers = F,
-          digits=4,digits.extra=0,no.space=T,align=T,model.names=F,notes.append=T,object.names=F)
-
 stargazer(same1, same2, same3, same4,
           type = "latex",
-          out = paste0(out, "HUM_samerace_JPE.tex"),
+          out = paste0(out, "HUM_names_complete_JPE_v3.tex"),
           title="Discriminatory Steering and Later Transactions",
           model.numbers = F,
           keep = c("whitetester","blacktester","hisptester","asiantester"),
           covariate.labels = c("Same Race Tester"),
           keep.stat=c("n","adj.rsq"),
+          digits=4,digits.extra=0,no.space=T,align=T,model.names=F,notes.append=T,object.names=F)
+
+stargazer(dif_score,
+          type = "latex",
+          out = paste0(out, "HUM_names_complete_JPE_v3_.tex"),
+          title="Discriminatory Steering and Later Transactions",
+          model.numbers = F,
           digits=4,digits.extra=0,no.space=T,align=T,model.names=F,notes.append=T,object.names=F)
 
 ## Panel B
