@@ -1,15 +1,9 @@
-# ---------------------------------------------------------------------------------------------- #
-#   Generate Table 14. Discriminatory Steering and Later Transactions                            #
-#                                                                                                # 
-#   R-Version: 4.04                                                                              #                                                             #
-#   Date Last Modification: 12/01/2021                                                           #
-# -----------------------------------------------------------------------------------------------#
 
 # Clear workspace
 rm(list = ls()) 
 
 # Set working directory
-setwd("~/")
+setwd("C:\Users\genin\OneDrive\Documents\Git\Discrimination\Final Tables")
 
 # Define function for loading packages
 rm(list = ls()) 
@@ -23,11 +17,11 @@ pkgTest <- function(x) {
   }
 }
 # Load packages
-packages <- c("readxl", "readstata13", "lfe", "Synth","data.table", "plm", "ggplot2", "MatchIt", "experiment", "stargazer")
+packages <- c("dplyr" ,"readxl", "readstata13", "lfe", "Synth","data.table", "plm", "ggplot2", "MatchIt", "experiment", "stargazer")
 lapply(packages, pkgTest)
 
-# Output directory
-out <- "~/"
+# Output
+out <- "C:/Users/genin/OneDrive/Documents/Git/Discrimination/output/"
 
 
 ## Housing Search  ######################################################################################################
@@ -96,6 +90,36 @@ recs_trial_final$buyer_asian_Rec <- 0
 recs_trial_final$buyer_asian_Rec[recs_trial_final$buyer_pred_race_Rec=="asian"] <- 1
 recs_trial_final$buyer_asian_Rec[is.na(recs_trial_final$buyer_pred_race_Rec)] <- NA
 
+## Means
+
+w = recs_trial_final %>% filter(buyer_pred_race_Rec=="white") %>%
+  summarise(mean_as = mean(buyer_asi_Rec, na.rm=TRUE),
+            mean_his= mean(buyer_his_Rec, na.rm=TRUE),
+            mean_black= mean(buyer_bla_Rec, na.rm=TRUE),
+            mean_whi= mean(buyer_whi_Rec, na.rm=TRUE))
+
+b = recs_trial_final %>% filter(seller_pred_race_Rec=="black") %>%
+  summarise(mean_as = mean(buyer_asi_Rec, na.rm=TRUE),
+            mean_his= mean(buyer_his_Rec, na.rm=TRUE),
+            mean_black= mean(buyer_bla_Rec, na.rm=TRUE),
+            mean_whi= mean(buyer_whi_Rec, na.rm=TRUE))
+
+a = recs_trial_final %>% filter(buyer_pred_race_Rec=="asian" & buyer_asi_Rec>0.7) %>% 
+  summarise(mean_as = mean(buyer_asi_Rec, na.rm=TRUE),
+            mean_his= mean(buyer_his_Rec, na.rm=TRUE),
+            mean_black= mean(buyer_bla_Rec, na.rm=TRUE),
+            mean_whi= mean(buyer_whi_Rec, na.rm=TRUE))
+
+h = recs_trial_final %>% filter(buyer_pred_race_Rec=="hispanic") %>% 
+  summarise(mean_as = mean(buyer_asi_Rec, na.rm=TRUE),
+            mean_his= mean(buyer_his_Rec, na.rm=TRUE),
+            mean_black= mean(buyer_bla_Rec, na.rm=TRUE),
+            mean_whi= mean(buyer_whi_Rec, na.rm=TRUE))
+
+w_dif = w$mean_whi-w$mean_black
+a_dif = a$mean_as - a$mean_his
+b_dif = b$mean_black -a$mean_black
+h_dif = h$mean_his-h$mean_as
 
 ### Construct Indicators of Confidence for Name Classifier
 recs_trial_final$prob50 <- 0
@@ -116,30 +140,26 @@ recs_trial_final$prob70[is.na(recs_trial_final$buyer_pred_race_Rec)] <- NA
 
 ##### Difference of Score ###############
 
-recs_trial_final$w_dif = recs_trial_final$buyer_whi_Rec - pmax(recs_trial_final$buyer_bla_Rec,recs_trial_final$buyer_his_Rec,recs_trial_final$buyer_asi_Rec)
-recs_trial_final$b_dif = recs_trial_final$buyer_bla_Rec - pmax(recs_trial_final$buyer_whi_Rec,recs_trial_final$buyer_his_Rec,recs_trial_final$buyer_asi_Rec)
-recs_trial_final$h_dif = recs_trial_final$buyer_his_Rec - pmax(recs_trial_final$buyer_bla_Rec,recs_trial_final$buyer_whi_Rec,recs_trial_final$buyer_asi_Rec)
-recs_trial_final$a_dif = recs_trial_final$buyer_asi_Rec - pmax(recs_trial_final$buyer_bla_Rec,recs_trial_final$buyer_his_Rec,recs_trial_final$buyer_whi_Rec)
-
-recs_trial_final$dif_score =NA
-recs_trial_final$dif_score= ifelse(recs_trial_final$buyer_pred_race_Rec=="white",recs_trial_final$w_dif,recs_trial_final$dif_score)
-recs_trial_final$dif_score= ifelse(recs_trial_final$buyer_pred_race_Rec=="black",recs_trial_final$b_dif,recs_trial_final$dif_score)
-recs_trial_final$dif_score= ifelse(recs_trial_final$buyer_pred_race_Rec=="hispanic",recs_trial_final$h_dif,recs_trial_final$dif_score)
-recs_trial_final$dif_score= ifelse(recs_trial_final$buyer_pred_race_Rec=="asian",recs_trial_final$a_dif,recs_trial_final$dif_score)
-
-dif_score = recs_trial_final %>%
-  group_by(buyer_pred_race_Rec) %>%
-  summarise(dif_score = mean(dif_score, na.rm=TRUE)) %>%
-  filter(!(is.na(dif_score)))
-
-dif_score= t(dif_score[c(4,2,3,1),])
+dif_score = matrix(ncol = 1,nrow =4)
+dif_score[1,] = w_dif
+dif_score[2,] = b_dif
+dif_score[3,] = h_dif 
+dif_score[4,] = a_dif
+dif_score= t(dif_score)
 
 # Same Race Tester 
 
 same1 <- felm(buyer_white_Rec ~ whitetester + w2012pc_Ad + b2012pc_Ad + a2012pc_Ad + hisp2012pc_Ad + logAdPrice  | CONTROL + SEQUENCE.x.x + month.x + HCITY.x + ARELATE2.x + SAPPTAM.x + TSEX.x.x + THHEGAI.x + TPEGAI.x + THIGHEDU.x + TCURTENR.x +  ALGNCUR.x + AELNG1.x + DPMTEXP.x + AMOVERS.x + age.x + ALEASETP.x + ACAROWN.x | 0 | CONTROL, data = recs_trial_final)
+summary(same1)
+
 same2 <- felm(buyer_black_Rec ~ blacktester + w2012pc_Ad + b2012pc_Ad + a2012pc_Ad + hisp2012pc_Ad + logAdPrice | CONTROL + SEQUENCE.x.x + month.x + HCITY.x + ARELATE2.x + SAPPTAM.x + TSEX.x.x + THHEGAI.x + TPEGAI.x + THIGHEDU.x + TCURTENR.x +  ALGNCUR.x + AELNG1.x + DPMTEXP.x + AMOVERS.x + age.x + ALEASETP.x + ACAROWN.x | 0 | CONTROL, data = recs_trial_final)
+summary(same2)
+
 same3 <- felm(buyer_hisp_Rec ~ hisptester + w2012pc_Ad + b2012pc_Ad + a2012pc_Ad + hisp2012pc_Ad + logAdPrice | CONTROL + SEQUENCE.x.x + month.x + HCITY.x + ARELATE2.x + SAPPTAM.x + TSEX.x.x + THHEGAI.x + TPEGAI.x + THIGHEDU.x + TCURTENR.x +  ALGNCUR.x + AELNG1.x + DPMTEXP.x + AMOVERS.x + age.x + ALEASETP.x + ACAROWN.x | 0 | CONTROL, data = recs_trial_final)
+summary(same3)
+
 same4 <- felm(buyer_asian_Rec ~ asiantester + w2012pc_Ad + b2012pc_Ad + a2012pc_Ad + hisp2012pc_Ad + logAdPrice | CONTROL + SEQUENCE.x.x + month.x + HCITY.x + ARELATE2.x + SAPPTAM.x + TSEX.x.x + THHEGAI.x + TPEGAI.x + THIGHEDU.x + TCURTENR.x +  ALGNCUR.x + AELNG1.x + DPMTEXP.x + AMOVERS.x + age.x + ALEASETP.x + ACAROWN.x | 0 | CONTROL, data = recs_trial_final)
+summary(same4)
 
 
 # Sales Price
@@ -157,6 +177,7 @@ recs_trial_final$TransMid11[recs_trial_final$RecordingDate_Rec > "2011-01-06"] <
 recs_trial_final$TransMid11[is.na(recs_trial_final$RecordingDate_Rec)] <- NA
 
 # Constrain to After 06/01/2011 (price > 10,000 and price < 10 Million)
+
 logPrice11 <- felm(log(SalesPriceAmount_Rec) ~ ofcolor + TransMonth + TransYear | CONTROL + SEQUENCE.x.x + month.x + HCITY.x + ARELATE2.x + SAPPTAM.x + TSEX.x.x + THHEGAI.x + TPEGAI.x + THIGHEDU.x + TCURTENR.x +  ALGNCUR.x + AELNG1.x + DPMTEXP.x + AMOVERS.x + age.x + ALEASETP.x + ACAROWN.x | 0 | CONTROL, data = subset(recs_trial_final, SalesPriceAmount_Rec>10000 & SalesPriceAmount_Rec<10000000 & TransMid11 ==1 ))
 logPrice12 <- felm(log(SalesPriceAmount_Rec) ~ ofcolor + w2012pc_Ad + TransMonth + TransYear | CONTROL + SEQUENCE.x.x + month.x + HCITY.x + ARELATE2.x + SAPPTAM.x + TSEX.x.x + THHEGAI.x + TPEGAI.x + THIGHEDU.x + TCURTENR.x +  ALGNCUR.x + AELNG1.x + DPMTEXP.x + AMOVERS.x + age.x + ALEASETP.x + ACAROWN.x | 0 | CONTROL, data = subset(recs_trial_final, SalesPriceAmount_Rec>10000 & SalesPriceAmount_Rec<10000000 & TransMid11 ==1 ))
 logPrice13 <- felm(log(SalesPriceAmount_Rec) ~ ofcolor + w2012pc_Ad + logAdPrice + TransMonth + TransYear | CONTROL + SEQUENCE.x.x + month.x + HCITY.x + ARELATE2.x + SAPPTAM.x + TSEX.x.x + THHEGAI.x + TPEGAI.x + THIGHEDU.x + TCURTENR.x +  ALGNCUR.x + AELNG1.x + DPMTEXP.x + AMOVERS.x + age.x + ALEASETP.x + ACAROWN.x | 0 | CONTROL, data = subset(recs_trial_final, SalesPriceAmount_Rec>10000 & SalesPriceAmount_Rec<10000000 & TransMid11 ==1 ))
@@ -192,9 +213,16 @@ mean1=as.vector(c(mean(a[a$white.x==1,"w2012pc_Rec"]),
 
 ##Panel A
 
+stargazer(dif_score,
+          type = "latex",
+          out = paste0(out, "HUM_tabdifscore_JPE.tex"),
+          title="Discriminatory Steering and Later Transactions",
+          model.numbers = F,
+          digits=4,digits.extra=0,no.space=T,align=T,model.names=F,notes.append=T,object.names=F)
+
 stargazer(same1, same2, same3, same4,
           type = "latex",
-          out = paste0(out, "HUM_names_complete_JPE_v3.tex"),
+          out = paste0(out, "HUM_samerace_JPE.tex"),
           title="Discriminatory Steering and Later Transactions",
           model.numbers = F,
           keep = c("whitetester","blacktester","hisptester","asiantester"),
@@ -202,15 +230,7 @@ stargazer(same1, same2, same3, same4,
           keep.stat=c("n","adj.rsq"),
           digits=4,digits.extra=0,no.space=T,align=T,model.names=F,notes.append=T,object.names=F)
 
-stargazer(dif_score,
-          type = "latex",
-          out = paste0(out, "HUM_names_complete_JPE_v3_.tex"),
-          title="Discriminatory Steering and Later Transactions",
-          model.numbers = F,
-          digits=4,digits.extra=0,no.space=T,align=T,model.names=F,notes.append=T,object.names=F)
-
 ## Panel B
-
 
 stargazer(logPrice11, logPrice12, logPrice13, logPrice14, logPrice15,
           type = "latex",
